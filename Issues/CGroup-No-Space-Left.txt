@@ -29,6 +29,7 @@ Once the server is online , connect it back to the cluster
   cat /proc/cgroups
   
   kubectl drain bay7 --delete-local-data --ignore-daemonsets
+  <<Sometimes daemonsets dont get deleted , eg: istio daemonset, havent seen any issues in rebooting the server without deleting the daemonset. But make sure kube scheduling to the node is disabled before rebooting>
   
   
   https://www.bswen.com/2020/01/others-How-to-solve-Failed-create-pod-sandbox-rpc-error-no-space-left-on-device.html
