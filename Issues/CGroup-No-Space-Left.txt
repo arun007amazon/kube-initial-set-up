@@ -1,0 +1,35 @@
+  Type     Reason                    Age                From               Message
+  ----     ------                    ----               ----               -------
+  Normal   Scheduled                 37s                default-scheduler  Successfully assigned default/cvc-data-service-bkqwp-deployment-6f5b985f95-6dkxs to bay7
+  Warning  FailedCreatePodContainer  14s (x3 over 37s)  kubelet, bay7      unable to ensure pod container exists: failed to create container for [kubepods burstable pod0d76eb25-0d3a-433d-9fc8-e35575198614] : mkdir /sys/fs/cgroup/memory/kubepods/burstable/pod0d76eb25-0d3a-433d-9fc8-e35575198614: no space left on device
+
+  
+Environments
+	centos 7.6
+	kubernetes v1.17/v1.16
+	docker 19.03.5
+  
+  
+  The solution
+Maybe there is a cgroup leak in your node,check like this:
+
+Check your cgroup counts, like this:
+	cat /proc/cgroups | column -t
+Check if you do have those cgroup count:
+	find -L /sys/fs/cgroup/memory -type d | wc -l 
+Drain the node from your cluster
+	kubectl drain <ip>
+Clear your cache
+	echo 3 > /proc/sys/vm/drop_caches
+If still not work, please reboot your node
+
+Once the server is online , connect it back to the cluster
+	kubectl uncordon <node name>
+  
+  cat /proc/cgroups
+  
+  kubectl drain bay7 --delete-local-data --ignore-daemonsets
+  
+  
+  https://www.bswen.com/2020/01/others-How-to-solve-Failed-create-pod-sandbox-rpc-error-no-space-left-on-device.html
+  https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/
